@@ -4,7 +4,7 @@ import { BsFillBarChartFill, BsFillBellFill } from "react-icons/bs";
 
 function Header() {
   return (
-    <div className=" fixed w-full h-16 py-6 bg-[#F0F5F5]  items-center flex px-12">
+    <div className=" fixed w-full h-16 py-6 bg-[#F0F5F5]  items-center flex px-12 z-50 drop-shadow-md	">
       {/* search */}
       <div className="w-full lg:flex hidden space-x-4 items-center justify-start py-2   ">
         <BiSearch className="w-4 h-4" />
