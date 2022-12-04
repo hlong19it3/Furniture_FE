@@ -8,8 +8,8 @@ function SignInPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginStatus, setLoginStatus] = useState();
   const [typeInput, setTypeInput] = useState('password');
+  const [loginStatus, setLoginStatus] = useState();
 
   const [showHidePassword, setShowHidePassword] = useState(false);
   const [showEye, setShowEye] = useState(false);
@@ -38,63 +38,57 @@ function SignInPage() {
   };
 
   return (
-    <div id="background">
-      <div className="flex w-screen h-screen items-center justify-center">
-        <div className="w-2/5 h-5/6 rounded-3xl bg-sky-500/[.08] shadow-lg p-7 flex flex-col justify-between items-center">
-          <div>
-            <h2>WELCOME ADMIN</h2>
+    <div className="flex w-screen h-screen items-center justify-center">
+      <div className="w-2/5 h-5/6 rounded-3xl bg-sky-500/[.08] shadow-lg p-7 flex flex-col justify-between items-center">
+        <div>
+          <h2>WELCOME ADMIN</h2>
+        </div>
+        <div className="w-3/4 flex-1 flex flex-col justify-evenly items-center">
+          <div class="relative z-0 mb-6 w-full group">
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              name="floating_email"
+              id="floating_email"
+              class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required
+            />
+            <label
+              for="floating_email"
+              class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Email address
+            </label>
           </div>
-          <div className="w-3/4 flex-1 flex flex-col justify-evenly items-center">
-            <div className="relative z-0 mb-6 w-full group">
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                name="floating_email"
-                id="floating_email"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-                required
-              />
-              <label
-                htmlFor="floating_email"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transhtmlForm -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          <div class="relative z-0 mb-6 w-full group">
+            <input
+              type={typeInput}
+              name="floating_password"
+              id="floating_password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required
+              onFocus={() => setShowEye(true)}
+              onBlur={() => (password ? setShowEye(true) : setShowEye(false))}
+            />
+            <label
+              for="floating_password"
+              class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Password
+            </label>
+            {showEye && (
+              <span
+                className="cursor-pointer absolute right-0 top-1/3"
+                onClick={() => setShowHidePassword(!showHidePassword)}
               >
-                Email address
-              </label>
-            </div>
-            <div className="relative z-0 mb-6 w-full group">
-              <input
-                type={typeInput}
-                name="floating_password"
-                id="floating_password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-                required
-                onFocus={() => setShowEye(true)}
-                onBlur={() => (password ? setShowEye(true) : setShowEye(false))}
-              />
-              <label
-                htmlFor="floating_password"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transhtmlForm -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >
-                Password
-              </label>
-              {showEye && (
-                <span
-                  className="cursor-pointer absolute right-0 top-1/3"
-                  onClick={() => setShowHidePassword(!showHidePassword)}
-                >
-                  {!showHidePassword ? (
-                    <AiFillEyeInvisible color="rgb(55 65 81)" />
-                  ) : (
-                    <AiFillEye color="rgb(55 65 81)" />
-                  )}
-                </span>
-              )}
-            </div>
+                {!showHidePassword ? <AiFillEyeInvisible color="rgb(55 65 81)" /> : <AiFillEye color="rgb(55 65 81)" />}
+              </span>
+            )}
           </div>
           <div className="w-3/4">
             <p>{loginStatus}</p>
