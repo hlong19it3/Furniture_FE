@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai';
+import CustomAxios from '~/config/api';
+import './SignInPage.css';
 
 function SignInPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [typeInput, setTypeInput] = useState('password');
+  const [loginStatus, setLoginStatus] = useState();
 
   const [showHidePassword, setShowHidePassword] = useState(false);
   const [showEye, setShowEye] = useState(false);
@@ -16,6 +21,21 @@ function SignInPage() {
       setTypeInput('password');
     }
   }, [showHidePassword]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await CustomAxios.post('/api/v1/users/signin', {
+      email,
+      password,
+    });
+    if (res.status === 201) {
+      setLoginStatus(res.data.msg);
+    }
+    if (res.status === 200) {
+      localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
+      navigate('/admin');
+    }
+  };
 
   return (
     <div className="flex w-screen h-screen items-center justify-center">
@@ -70,13 +90,18 @@ function SignInPage() {
               </span>
             )}
           </div>
-        </div>
-        <div className="w-3/4">
-          <button class="w-full relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-            <span class="w-full relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-              Sign In
-            </span>
-          </button>
+          <div className="w-3/4">
+            <p>{loginStatus}</p>
+            <button
+              onClick={handleSubmit}
+              type="submit"
+              className="w-full relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+            >
+              <span className="w-full relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Sign In
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
