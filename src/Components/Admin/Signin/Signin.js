@@ -1,43 +1,43 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import './Signin.css'
-import CustomAxios from '../../../config/api'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Signin.css";
+import CustomAxios from "~/config/api";
 
 function Login(props) {
-  const navigate = useNavigate()
-  const [passwordShown, setPasswordShown] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const navigate = useNavigate();
+  const [passwordShown, setPasswordShown] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [loginStatus, setLoginStatus] = useState()
+  const [loginStatus, setLoginStatus] = useState();
 
   const handleChangeEmail = (e) => {
-    setEmail(e.target.value)
-  }
+    setEmail(e.target.value);
+  };
   const handleChangePassword = (e) => {
-    setPassword(e.target.value)
-  }
+    setPassword(e.target.value);
+  };
 
   const togglePassword = () => {
     // When the handler is invoked
     // inverse the boolean state of passwordShown
-    setPasswordShown(!passwordShown)
-  }
+    setPasswordShown(!passwordShown);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const res = await CustomAxios.post('/api/v1/users/signin', {
+    e.preventDefault();
+    const res = await CustomAxios.post("/api/v1/users/signin", {
       email,
       password,
-    })
+    });
     if (res.status === 201) {
-      setLoginStatus(res.data.msg)
+      setLoginStatus(res.data.msg);
     }
     if (res.status === 200) {
-      localStorage.setItem('userInfo', JSON.stringify(res.data.tokens))
-      navigate('/admin')
+      localStorage.setItem("userInfo", JSON.stringify(res.data.tokens));
+      navigate("/admin");
     }
-  }
+  };
 
   return (
     <div id="bg">
@@ -53,7 +53,7 @@ function Login(props) {
           <input
             value={password}
             placeholder="Password"
-            type={passwordShown ? 'text' : 'password'}
+            type={passwordShown ? "text" : "password"}
             // type="password"
             required
             onChange={handleChangePassword}
@@ -70,6 +70,6 @@ function Login(props) {
         </form>
       </div>
     </div>
-  )
+  );
 }
-export default Login
+export default Login;
