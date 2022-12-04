@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
+import { useEffect, useState } from 'react';
+import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai';
 
 function SignInPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [typeInput, setTypeInput] = useState("password");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [typeInput, setTypeInput] = useState('password');
 
   const [showHidePassword, setShowHidePassword] = useState(false);
   const [showEye, setShowEye] = useState(false);
 
   useEffect(() => {
     if (showHidePassword === true) {
-      setTypeInput("text");
+      setTypeInput('text');
     } else {
-      setTypeInput("password");
+      setTypeInput('password');
     }
   }, [showHidePassword]);
 
@@ -66,11 +66,7 @@ function SignInPage() {
                 className="cursor-pointer absolute right-0 top-1/3"
                 onClick={() => setShowHidePassword(!showHidePassword)}
               >
-                {!showHidePassword ? (
-                  <AiFillEyeInvisible color="rgb(55 65 81)" />
-                ) : (
-                  <AiFillEye color="rgb(55 65 81)" />
-                )}
+                {!showHidePassword ? <AiFillEyeInvisible color="rgb(55 65 81)" /> : <AiFillEye color="rgb(55 65 81)" />}
               </span>
             )}
           </div>
