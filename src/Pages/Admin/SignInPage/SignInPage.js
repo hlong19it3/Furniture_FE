@@ -5,9 +5,11 @@ import CustomAxios from '~/config/api';
 import './SignInPage.css';
 
 function SignInPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [typeInput, setTypeInput] = useState('password');
+  const [loginStatus, setLoginStatus] = useState();
 
   const [showHidePassword, setShowHidePassword] = useState(false);
   const [showEye, setShowEye] = useState(false);
