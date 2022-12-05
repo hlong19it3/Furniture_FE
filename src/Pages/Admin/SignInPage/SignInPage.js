@@ -33,7 +33,15 @@ function SignInPage() {
     }
     if (res.status === 200) {
       localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
-      navigate('/admin');
+      CustomAxios.get('/api/v1/users/token', {
+        headers: { 'x-accesstoken': res.data.tokens.accessToken },
+      }).then((res) => {
+        if (res.data.role === 2) {
+          navigate('/admin');
+        } else if (res.data.role === 1) {
+          navigate('/');
+        }
+      });
     }
   };
 

@@ -1,22 +1,22 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import './Signup.css'
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import './Signup.css';
 
-import CustomAxios from '../../config/api'
+import CustomAxios from '../../config/api';
 // import { data } from 'autoprefixer'
 
 function Signup(props) {
   // const navigate = useNavigate()
 
-  const [firstName, setFirstName] = useState()
-  const [lastName, setLastName] = useState()
-  const [email, setEmail] = useState()
-  const [address, setAddress] = useState()
-  const [phone, setPhone] = useState()
-  const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
+  const [email, setEmail] = useState();
+  const [address, setAddress] = useState();
+  const [phone, setPhone] = useState();
+  const [password, setPassword] = useState('');
   // const [pwdError, setPwdError] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [passwordShown, setPasswordShown] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordShown, setPasswordShown] = useState(false);
 
   // const validPassword = new RegExp(
   //   '^(?=.*d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-#$.%&*])(?=.*[a-zA-Z]).{8,16}$'
@@ -31,11 +31,11 @@ function Signup(props) {
   const togglePassword = () => {
     // When the handler is invoked
     // inverse the boolean state of passwordShown
-    setPasswordShown(!passwordShown)
-  }
+    setPasswordShown(!passwordShown);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (password === confirmPassword) {
       const res = await CustomAxios.post('/api/v1/users/signup', {
         firstName,
@@ -44,16 +44,16 @@ function Signup(props) {
         address,
         phone,
         password,
-      })
-      alert('Signup successfully!')
-      console.log(res.data)
+      });
+      alert('Signup successfully!');
+      console.log(res.data);
     } else {
-      alert('wrong repeat password')
+      alert('wrong repeat password');
     }
-  }
+  };
 
   return (
-    <div className="bg">
+    <div id="bg">
       <div className="signup-page">
         <h2>SIGN UP</h2>
         <form onSubmit={handleSubmit} className="form-signup">
@@ -105,11 +105,7 @@ function Signup(props) {
             required
             minLength={8}
           ></input>
-          <i
-            className="fa-solid fa-eye"
-            id="showPassIcon1"
-            onClick={togglePassword}
-          />
+          <i className="fa-solid fa-eye" id="showPassIcon1" onClick={togglePassword} />
 
           <input
             value={confirmPassword}
@@ -123,16 +119,13 @@ function Signup(props) {
           {/* {pwdError} */}
           <input type="submit" value="Sign up"></input>
           <br></br>
-          <Link
-            to="/signin"
-            style={{ textDecoration: 'none', marginLeft: '137px' }}
-          >
+          <Link to="/signin" style={{ textDecoration: 'none', marginLeft: '137px' }}>
             Already have account? Sign in now!
           </Link>
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default Signup
+export default Signup;
