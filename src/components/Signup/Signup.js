@@ -53,7 +53,7 @@ function Signup(props) {
   };
 
   return (
-    <div id="bg">
+    <div id="bg1">
       <div className="signup-page">
         <h2>SIGN UP</h2>
         <form onSubmit={handleSubmit} className="form-signup">
@@ -119,7 +119,7 @@ function Signup(props) {
           {/* {pwdError} */}
           <input type="submit" value="Sign up"></input>
           <br></br>
-          <Link to="/signin" style={{ textDecoration: 'none', marginLeft: '137px' }}>
+          <Link to="/signin" style={{ textDecoration: 'none', marginLeft: '50px' }}>
             Already have account? Sign in now!
           </Link>
         </form>

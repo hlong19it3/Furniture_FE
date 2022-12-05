@@ -1,8 +1,8 @@
-#bg {
+#bg1 {
   background-image: url('https://img.freepik.com/free-photo/japandi-living-room-interior-design_53876-145502.jpg?w=900&t=st=1669881374~exp=1669881974~hmac=ac0c84ea8a902d9a978c48350a2a6e60a924d95092217be601ae4ca3bfb0b1ed');
   background-size: cover;
   position: relative;
-  min-height: 140vh;
+  min-height: 150vh;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
