@@ -1,4 +1,6 @@
 import React from 'react';
+import Signup from '~/components/Signup/Signup';
+import Signin from '~/components/Signin/Signin';
 import configFile from '~/config';
 import { DashBoard } from '~/Pages/Admin/DashBoardPage';
 import { SignInPage } from '~/Pages/Admin/SignInPage';
@@ -13,5 +15,15 @@ export const adminRoutes = [
   {
     path: configFile.routes.adminRoute,
     component: DashBoard,
+  },
+];
+export const userRoutes = [
+  {
+    path: configFile.routes.signInUser,
+    component: Signin,
+  },
+  {
+    path: configFile.routes.signUpUser,
+    component: Signup,
   },
 ];

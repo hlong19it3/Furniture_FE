@@ -1,7 +1,12 @@
+import { config } from 'flowbite/plugin';
 import React, { useState, useEffect } from 'react';
+import axios from '~/config/api';
 import CustomAxios from '~/config/api';
 
 function DashBoard() {
+  // const accessToken = localStorage.getItem();
+  // axios.interceptors.request.use()
+
   const [users, setUser] = useState([]);
   useEffect(() => {
     getUsers();
