@@ -4,6 +4,7 @@ import { ProtectAdminRoute } from './components/ProtectRoute/ProtectAdminRoute';
 import { AuthContext } from './contexts/AuthContextProvider';
 import { AdminLayout } from './layouts/AdminLayout';
 import { adminRoutes, userRoutes } from './routes';
+import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   const [token, currentUser] = useContext(AuthContext);
 
