@@ -5,8 +5,6 @@ function SideBarItem({ content, url, Icon }) {
   const [active, setActive] = useState();
   const { adminRoute } = useParams();
 
-  console.log(active);
-
   useLayoutEffect(() => {
     if (adminRoute === content.toLowerCase()) {
       setActive(true);
