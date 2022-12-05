@@ -32,14 +32,14 @@ function SignInPage() {
       setLoginStatus(res.data.msg);
     }
     if (res.status === 200) {
-      localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
       CustomAxios.get('/api/v1/users/token', {
         headers: { 'x-accesstoken': res.data.tokens.accessToken },
       }).then((res) => {
         if (res.data.role === 2) {
           navigate('/admin');
+          localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
         } else if (res.data.role === 1) {
-          navigate('/');
+          navigate('/signin');
         }
       });
     }

@@ -1,22 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-function ProtectAdminRoute({ user, token, children }) {
+function ProtectUserRoute({ user, token, children }) {
   const nav = useNavigate();
 
   useEffect(() => {
     if (token === undefined) {
-      nav('/admin/signin');
+      nav('/signin');
     } else {
       if (user) {
-        console.log(user.role);
-        if (user.role === 1) {
-          nav('/signin');
-        }
-        nav('/admin');
+        // console.log(user.role);
+        // if (user.role === 1) {
+        //   nav('/signin');
+        // }
       }
     }
   }, [token, user]);
 
   return children;
 }
-export default ProtectAdminRoute;
+export default ProtectUserRoute;
