@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import UserPage from './Admin/UsersPage/UserPage';
+import { UserPage } from './Admin/UsersPage';
 
 function AdminPages() {
   const { adminRoute } = useParams();
