@@ -9,12 +9,13 @@ function ProtectAdminRoute({ user, token, children }) {
     } else {
       if (user) {
         console.log(user.role);
-        if (user.role === 1) {
+        if (user.role === 1 || user === undefined) {
           nav('/signin');
         }
         nav('/admin');
       }
     }
+    // eslint-disable-next-line
   }, [token, user]);
 
   return children;
