@@ -8,6 +8,7 @@ function UserPage() {
   const [users, setUser] = useState([]);
   useEffect(() => {
     getUsers();
+    // eslint-disable-next-line
   }, []);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
@@ -64,7 +65,7 @@ function UserPage() {
         <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="p-4">
+              {/* <th scope="col" className="p-4">
                 <div className="flex items-center">
                   <input
                     id="checkbox-all-search"
@@ -75,7 +76,7 @@ function UserPage() {
                     checkbox
                   </label>
                 </div>
-              </th>
+              </th> */}
               <th scope="col" className="py-3 px-6">
                 First name
               </th>
@@ -102,7 +103,7 @@ function UserPage() {
                 key={user.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
-                <td className="p-4 w-4">
+                {/* <td className="p-4 w-4">
                   <div className="flex items-center">
                     <input
                       id="checkbox-table-search-1"
@@ -113,7 +114,7 @@ function UserPage() {
                       checkbox
                     </label>
                   </div>
-                </td>
+                </td> */}
                 {/* <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {user.first_name}
                 </th> */}
