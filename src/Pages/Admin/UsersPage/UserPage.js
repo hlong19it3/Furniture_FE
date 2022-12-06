@@ -10,8 +10,10 @@ function UserPage() {
     getUsers();
   }, []);
 
+  const tokens = JSON.parse(localStorage.getItem('userInfo'));
+
   const getUsers = async () => {
-    const res = await CustomAxios.get('/api/v1/users/');
+    const res = await CustomAxios.get('/api/v1/users/', { headers: { 'x-accesstoken': tokens.accessToken } });
     setUser(res.data);
   };
   const deleteUser = async (id) => {
