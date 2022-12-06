@@ -34,11 +34,12 @@ function SignInPage() {
     if (res.status === 200) {
       CustomAxios.get('/api/v1/users/token', {
         headers: { 'x-accesstoken': res.data.tokens.accessToken },
-      }).then((res) => {
-        if (res.data.role === 2) {
+      }).then((response) => {
+        if (response.data.role === 2) {
           navigate('/admin');
           localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
-        } else if (res.data.role === 1) {
+          console.log(res.data.tokens);
+        } else if (response.data.role === 1) {
           navigate('/signin');
         }
       });
