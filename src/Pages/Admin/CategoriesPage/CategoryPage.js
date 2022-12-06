@@ -1,26 +1,27 @@
 import { useEffect, useState } from 'react';
 import CustomAxios from '~/config/api';
 
-function UserPage() {
+function CategoryPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
 
-  const [users, setUser] = useState([]);
+  const [categories, setCategory] = useState([]);
   useEffect(() => {
-    getUsers();
+    getCategories();
     // eslint-disable-next-line
   }, []);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
+  console.log(tokens.accessToken);
 
-  const getUsers = async () => {
-    const res = await CustomAxios.get('/api/v1/users/', { headers: { 'x-accesstoken': tokens.accessToken } });
-    setUser(res.data);
+  const getCategories = async () => {
+    const res = await CustomAxios.get('/api/v1/categories/', { headers: { 'x-accesstoken': tokens.accessToken } });
+    setCategory(res.data);
   };
-  const deleteUser = async (id) => {
+  const deleteCategory = async (id) => {
     try {
-      await CustomAxios.delete(`/api/v1/users/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
-      getUsers();
+      await CustomAxios.delete(`/api/v1/categories/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
+      getCategories();
     } catch (error) {
       console.log(error);
     }
@@ -78,29 +79,21 @@ function UserPage() {
                 </div>
               </th> */}
               <th scope="col" className="py-3 px-6">
-                First name
+                Type
               </th>
               <th scope="col" className="py-3 px-6">
-                Last name
+                Category Id
               </th>
-              <th scope="col" className="py-3 px-6">
-                Address
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Email
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Phone
-              </th>
+
               <th scope="col" className="py-3 px-6">
                 Action
               </th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {categories.map((category, index) => (
               <tr
-                key={user.id}
+                key={category.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 {/* <td className="p-4 w-4">
@@ -118,14 +111,15 @@ function UserPage() {
                 {/* <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {user.first_name}
                 </th> */}
-                <td className="py-4 px-6">{user.firstName}</td>
-                <td className="py-4 px-6">{user.lastName}</td>
-                <td className="py-4 px-6">{user.address}</td>
-                <td className="py-4 px-6">{user.email}</td>
-                <td className="py-4 px-6">{user.phone}</td>
+                <td className="py-4 px-6">{category.type}</td>
+                <td className="py-4 px-6">{category.categoryId}</td>
                 <td className="py-4 px-6">
+                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Create</button>
+                  &ensp;
+                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
+                  &ensp;
                   <button
-                    onClick={() => deleteUser(user.id)}
+                    onClick={() => deleteCategory(category.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Delete
@@ -233,4 +227,4 @@ function UserPage() {
   );
 }
 
-export default UserPage;
+export default CategoryPage;

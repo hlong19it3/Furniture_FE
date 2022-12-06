@@ -1,26 +1,27 @@
 import { useEffect, useState } from 'react';
 import CustomAxios from '~/config/api';
 
-function UserPage() {
+function ProductPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
 
-  const [users, setUser] = useState([]);
+  const [orders, setOrder] = useState([]);
   useEffect(() => {
-    getUsers();
+    getOrders();
     // eslint-disable-next-line
   }, []);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
+  console.log(tokens.accessToken);
 
-  const getUsers = async () => {
-    const res = await CustomAxios.get('/api/v1/users/', { headers: { 'x-accesstoken': tokens.accessToken } });
-    setUser(res.data);
+  const getOrders = async () => {
+    const res = await CustomAxios.get('/api/v1/orders/', { headers: { 'x-accesstoken': tokens.accessToken } });
+    setOrder(res.data);
   };
-  const deleteUser = async (id) => {
+  const deleteOrder = async (id) => {
     try {
-      await CustomAxios.delete(`/api/v1/users/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
-      getUsers();
+      await CustomAxios.delete(`/api/v1/orders/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
+      getOrders();
     } catch (error) {
       console.log(error);
     }
@@ -78,13 +79,16 @@ function UserPage() {
                 </div>
               </th> */}
               <th scope="col" className="py-3 px-6">
-                First name
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Last name
+                Name
               </th>
               <th scope="col" className="py-3 px-6">
                 Address
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Status
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Time
               </th>
               <th scope="col" className="py-3 px-6">
                 Email
@@ -98,9 +102,9 @@ function UserPage() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {orders.map((order, index) => (
               <tr
-                key={user.id}
+                key={order.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 {/* <td className="p-4 w-4">
@@ -118,14 +122,17 @@ function UserPage() {
                 {/* <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {user.first_name}
                 </th> */}
-                <td className="py-4 px-6">{user.firstName}</td>
-                <td className="py-4 px-6">{user.lastName}</td>
-                <td className="py-4 px-6">{user.address}</td>
-                <td className="py-4 px-6">{user.email}</td>
-                <td className="py-4 px-6">{user.phone}</td>
+                <td className="py-4 px-6">{order.User.firstName}</td>
+                <td className="py-4 px-6">{order.shippingAddress}</td>
+                <td className="py-4 px-6">{order.status}</td>
+                <td className="py-4 px-6">{order.createdAt.slice(0, 10)}</td>
+                <td className="py-4 px-6">{order.User.email}</td>
+                <td className="py-4 px-6">{order.User.phone}</td>
                 <td className="py-4 px-6">
+                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
+                  &ensp;
                   <button
-                    onClick={() => deleteUser(user.id)}
+                    onClick={() => deleteOrder(order.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Delete
@@ -233,4 +240,4 @@ function UserPage() {
   );
 }
 
-export default UserPage;
+export default ProductPage;
