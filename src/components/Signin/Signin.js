@@ -35,6 +35,7 @@ function Login(props) {
     }
     if (res.status === 200) {
       localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
+      console.log(res.data.tokens);
       navigate('/home');
     }
   };
