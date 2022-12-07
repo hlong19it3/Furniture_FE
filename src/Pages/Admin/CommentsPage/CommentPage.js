@@ -1,26 +1,26 @@
 import { useEffect, useState } from 'react';
 import CustomAxios from '~/config/api';
 
-function ProductPage() {
+function CommentPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
 
-  const [orders, setOrder] = useState([]);
+  const [comments, setComment] = useState([]);
   useEffect(() => {
-    getOrders();
+    getComments();
     // eslint-disable-next-line
   }, []);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
 
-  const getOrders = async () => {
-    const res = await CustomAxios.get('/api/v1/orders/', { headers: { 'x-accesstoken': tokens.accessToken } });
-    setOrder(res.data);
+  const getComments = async () => {
+    const res = await CustomAxios.get('/api/v1/comments/', { headers: { 'x-accesstoken': tokens.accessToken } });
+    setComment(res.data);
   };
-  const deleteOrder = async (id) => {
+  const deleteComment = async (id) => {
     try {
-      await CustomAxios.delete(`/api/v1/orders/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
-      getOrders();
+      await CustomAxios.delete(`/api/v1/comments/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
+      getComments();
     } catch (error) {
       console.log(error);
     }
@@ -78,22 +78,16 @@ function ProductPage() {
                 </div>
               </th> */}
               <th scope="col" className="py-3 px-6">
-                Name
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Address
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Status
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Time
-              </th>
-              <th scope="col" className="py-3 px-6">
                 Email
               </th>
               <th scope="col" className="py-3 px-6">
-                Phone
+                Product
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Content
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Time
               </th>
               <th scope="col" className="py-3 px-6">
                 Action
@@ -101,9 +95,9 @@ function ProductPage() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order, index) => (
+            {comments.map((comment, index) => (
               <tr
-                key={order.id}
+                key={comment.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 {/* <td className="p-4 w-4">
@@ -121,17 +115,13 @@ function ProductPage() {
                 {/* <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {user.first_name}
                 </th> */}
-                <td className="py-4 px-6">{order.User.firstName}</td>
-                <td className="py-4 px-6">{order.shippingAddress}</td>
-                <td className="py-4 px-6">{order.status}</td>
-                <td className="py-4 px-6">{order.createdAt.slice(0, 10)}</td>
-                <td className="py-4 px-6">{order.User.email}</td>
-                <td className="py-4 px-6">{order.User.phone}</td>
+                <td className="py-4 px-6">{comment.User.email}</td>
+                <td className="py-4 px-6">{comment.Product.name}</td>
+                <td className="py-4 px-6">{comment.content}</td>
+                <td className="py-4 px-6">{comment.createdAt.slice(0, 10)}</td>
                 <td className="py-4 px-6">
-                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
-                  &ensp;
                   <button
-                    onClick={() => deleteOrder(order.id)}
+                    onClick={() => deleteComment(comment.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Delete
@@ -239,4 +229,4 @@ function ProductPage() {
   );
 }
 
-export default ProductPage;
+export default CommentPage;

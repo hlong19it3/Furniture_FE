@@ -12,7 +12,6 @@ function CategoryPage() {
   }, []);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
-  console.log(tokens.accessToken);
 
   const getCategories = async () => {
     const res = await CustomAxios.get('/api/v1/categories/', { headers: { 'x-accesstoken': tokens.accessToken } });
