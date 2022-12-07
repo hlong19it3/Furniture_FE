@@ -38,7 +38,7 @@ function SignInPage() {
         if (response.data.role === 2) {
           navigate('/admin');
           localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
-          console.log(res.data.tokens);
+          // console.log(res.data.tokens);
         } else if (response.data.role === 1) {
           navigate('/signin');
         }

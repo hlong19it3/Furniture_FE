@@ -37,7 +37,7 @@ function Signup(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password === confirmPassword) {
-      const res = await CustomAxios.post('/api/v1/users/signup', {
+      await CustomAxios.post('/api/v1/users/signup', {
         firstName,
         lastName,
         email,
@@ -46,7 +46,7 @@ function Signup(props) {
         password,
       });
       alert('Signup successfully!');
-      console.log(res.data);
+      // console.log(res.data);
     } else {
       alert('wrong repeat password');
     }
