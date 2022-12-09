@@ -8,7 +8,6 @@ function ProtectAdminRoute({ user, token, children }) {
       nav('/admin/signin');
     } else {
       if (user) {
-        console.log(user.role);
         if (user.role === 1 || user === undefined) {
           nav('/signin');
         }
