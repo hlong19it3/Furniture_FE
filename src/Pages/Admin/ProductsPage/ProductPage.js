@@ -2,60 +2,57 @@ import { useEffect, useState } from 'react';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
-function CategoryPage() {
+function ProductPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
 
-  const [categories, setCategory] = useState([]);
+  const [products, setProduct] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const debounced = useDebounce(searchValue, 600);
 
   useEffect(() => {
-    getCategories();
+    getProducts();
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     if (!debounced.trim()) {
-      getCategories();
+      getProducts();
     } else {
-      searchCategory(debounced);
+      searchProduct(debounced);
     }
     // eslint-disable-next-line
   }, [debounced]);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
 
-  const getCategories = async () => {
-    const res = await CustomAxios.get('/api/v1/categories/', { headers: { 'x-accesstoken': tokens.accessToken } });
-    setCategory(res.data);
+  const getProducts = async () => {
+    const res = await CustomAxios.get('/api/v1/products/', { headers: { 'x-accesstoken': tokens.accessToken } });
+    setProduct(res.data);
   };
-
-  const deleteCategory = async (id) => {
+  const deleteProduct = async (id) => {
     try {
-      await CustomAxios.delete(`/api/v1/categories/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
-      getCategories();
+      await CustomAxios.delete(`/api/v1/products/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
+      getProducts();
     } catch (error) {
       console.log(error);
     }
   };
-
-  const searchCategory = async (value) => {
+  const searchProduct = async (value) => {
     try {
-      const res = await CustomAxios.get(`/api/v1/categories/search/${value}`, {
+      const res = await CustomAxios.get(`/api/v1/products/search/${value}`, {
         headers: { 'x-accesstoken': tokens.accessToken },
       });
 
-      setCategory(res.data);
+      setProduct(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleSearchCategory = (e) => {
+  const handleSearch = (e) => {
     setSearchValue(e.target.value);
   };
-
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
       <div className=" w-full relative shadow-md sm:rounded-lg ">
@@ -64,7 +61,7 @@ function CategoryPage() {
             <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
               <input
                 value={searchValue}
-                onChange={handleSearchCategory}
+                onChange={handleSearch}
                 type="search"
                 className="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Search"
@@ -90,21 +87,32 @@ function CategoryPage() {
                 </div>
               </th> */}
               <th scope="col" className="py-3 px-6">
-                Type
+                Name
               </th>
               <th scope="col" className="py-3 px-6">
-                Category Id
+                Manufacturer
               </th>
-
+              <th scope="col" className="py-3 px-6">
+                Category
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Price
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Color
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Description
+              </th>
               <th scope="col" className="py-3 px-6">
                 Action
               </th>
             </tr>
           </thead>
           <tbody>
-            {categories.map((category, index) => (
+            {products.map((product, index) => (
               <tr
-                key={category.id}
+                key={product.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 {/* <td className="p-4 w-4">
@@ -122,13 +130,17 @@ function CategoryPage() {
                 {/* <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {user.first_name}
                 </th> */}
-                <td className="py-4 px-6">{category.type}</td>
-                <td className="py-4 px-6">{category.categoryId}</td>
+                <td className="py-4 px-6">{product.name}</td>
+                <td className="py-4 px-6">{product.Manufacturer.manufacturerName}</td>
+                <td className="py-4 px-6">{product.Category.type}</td>
+                <td className="py-4 px-6">{product.salePrice}</td>
+                <td className="py-4 px-6">{product.color}</td>
+                <td className="py-4 px-6">{product.description}</td>
                 <td className="py-4 px-6">
                   <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
                   &ensp;
                   <button
-                    onClick={() => deleteCategory(category.id)}
+                    onClick={() => deleteProduct(product.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Delete
@@ -236,4 +248,4 @@ function CategoryPage() {
   );
 }
 
-export default CategoryPage;
+export default ProductPage;
