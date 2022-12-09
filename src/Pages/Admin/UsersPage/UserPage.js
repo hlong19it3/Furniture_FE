@@ -2,19 +2,37 @@ import { useEffect, useState } from 'react';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
+const limit = 5;
+
 function UserPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
 
   const [users, setUser] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [offSet, setOffSet] = useState(0);
+  const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const debounced = useDebounce(searchValue, 600);
 
+  const totalPage = Math.ceil(total / limit);
+  console.log(totalPage);
   useEffect(() => {
     getUsers();
 
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    let page = [];
+    for (let i = 0; i < totalPage; i++) {
+      page.push(i);
+    }
+    setPages(page);
+
+    // eslint-disable-next-line
+  }, [users]);
 
   useEffect(() => {
     if (!debounced.trim()) {
@@ -23,13 +41,20 @@ function UserPage() {
       searchUser(debounced);
     }
     // eslint-disable-next-line
-  }, [debounced]);
+  }, [debounced, offSet]);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
 
   const getUsers = async () => {
-    const res = await CustomAxios.get('/api/v1/users/', { headers: { 'x-accesstoken': tokens.accessToken } });
-    setUser(res.data);
+    const res = await CustomAxios.get('/api/v1/users/', {
+      headers: { 'x-accesstoken': tokens.accessToken },
+      params: {
+        limit: limit,
+        offset: offSet,
+      },
+    });
+    setUser(res.data.rows);
+    setTotal(res.data.count);
   };
   const deleteUser = async (id) => {
     try {
@@ -55,6 +80,21 @@ function UserPage() {
     setSearchValue(e.target.value);
   };
 
+  const handlePaging = (currentPosition) => {
+    setOffSet(currentPosition * limit);
+    setCurrentPage(currentPosition);
+  };
+  const handlePreNext = (status) => {
+    if (status === 'pre') {
+      if (currentPage > 0) {
+        setCurrentPage(currentPage - 1);
+      }
+    } else {
+      if (currentPage < total / limit - 1) {
+        setCurrentPage(currentPage + 1);
+      }
+    }
+  };
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
       <div className=" w-full relative shadow-md sm:rounded-lg ">
@@ -150,13 +190,16 @@ function UserPage() {
         {/* Pagination */}
         <nav className="flex justify-between items-center pt-4 text-base" aria-label="Table navigation">
           <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-            Showing <span className="font-semibold text-gray-900 dark:text-white">1-10</span> of{' '}
-            <span className="font-semibold text-gray-900 dark:text-white">1000</span>
+            Showing{' '}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {offSet + 1 + '-' + (offSet + limit > total ? total : offSet + limit)}{' '}
+            </span>
+            of <span className="font-semibold text-gray-900 dark:text-white">{total}</span>
           </span>
           <ul className="inline-flex items-center -space-x-px">
             <li>
-              <a
-                href="##"
+              <button
+                onClick={() => handlePreNext('pre')}
                 className="block py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 <span className="sr-only">Previous</span>
@@ -173,52 +216,26 @@ function UserPage() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-              </a>
+              </button>
             </li>
+            {pages.map((position) => (
+              <li key={position}>
+                <button
+                  onClick={() => handlePaging(position)}
+                  className={
+                    currentPage === position
+                      ? ' text-blue-600 bg-blue-50  py-2 px-3 leading-tight hover:bg-blue-100 hover:text-blue-700 border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+                      : 'py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+                  }
+                >
+                  {position + 1}
+                </button>
+              </li>
+            ))}
+
             <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                aria-current="page"
-                className="z-10 py-2 px-3 leading-tight text-blue-600 bg-blue-50 border border-blue-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                ...
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                100
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
+              <button
+                onClick={() => handlePreNext('next')}
                 className="block py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 <span className="sr-only">Next</span>
@@ -235,7 +252,7 @@ function UserPage() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-              </a>
+              </button>
             </li>
           </ul>
         </nav>

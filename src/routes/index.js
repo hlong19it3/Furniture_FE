@@ -4,7 +4,7 @@ import Signin from '~/components/Signin/Signin';
 import configFile from '~/config';
 import { DashBoard } from '~/Pages/Admin/DashBoardPage';
 import { SignInPage } from '~/Pages/Admin/SignInPage';
-import AdminPages from '~/Pages';
+import AdminPages from '~/Pages/Admin';
 
 export const adminRoutes = [
   { path: configFile.routes.admin, component: DashBoard },

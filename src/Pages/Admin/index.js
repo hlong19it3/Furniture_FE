@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { UserPage } from './Admin/UsersPage';
-import { OrderPage } from './Admin/OrdersPage';
-import { CategoryPage } from './Admin/CategoriesPage';
-import { CommentPage } from './Admin/CommentsPage';
-import { ProductPage } from './Admin/ProductsPage';
+import { UserPage } from './UsersPage';
+import { OrderPage } from './OrdersPage';
+import { CategoryPage } from './CategoriesPage';
+import { CommentPage } from './CommentsPage';
+import { ProductPage } from './ProductsPage';
 
 function AdminPages() {
   const { adminRoute } = useParams();

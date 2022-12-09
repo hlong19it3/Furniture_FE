@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
+const limit = 5;
+
 function ProductPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
@@ -9,6 +11,22 @@ function ProductPage() {
   const [products, setProduct] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const debounced = useDebounce(searchValue, 600);
+  const [pages, setPages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [offSet, setOffSet] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  const totalPage = Math.ceil(total / limit);
+
+  useEffect(() => {
+    let page = [];
+    for (let i = 0; i < totalPage; i++) {
+      page.push(i);
+    }
+    setPages(page);
+
+    // eslint-disable-next-line
+  }, [products]);
 
   useEffect(() => {
     getProducts();
@@ -22,13 +40,20 @@ function ProductPage() {
       searchProduct(debounced);
     }
     // eslint-disable-next-line
-  }, [debounced]);
+  }, [debounced, offSet]);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
 
   const getProducts = async () => {
-    const res = await CustomAxios.get('/api/v1/products/', { headers: { 'x-accesstoken': tokens.accessToken } });
-    setProduct(res.data);
+    const res = await CustomAxios.get('/api/v1/products/', {
+      headers: { 'x-accesstoken': tokens.accessToken },
+      params: {
+        limit: limit,
+        offset: offSet,
+      },
+    });
+    setProduct(res.data.rows);
+    setTotal(res.data.count);
   };
   const deleteProduct = async (id) => {
     try {
@@ -53,6 +78,22 @@ function ProductPage() {
   const handleSearch = (e) => {
     setSearchValue(e.target.value);
   };
+
+  const handlePaging = (currentPosition) => {
+    setOffSet(currentPosition * limit);
+    setCurrentPage(currentPosition);
+  };
+  const handlePreNext = (status) => {
+    if (status === 'pre') {
+      if (currentPage > 0) {
+        setCurrentPage(currentPage - 1);
+      }
+    } else {
+      if (currentPage < total / limit - 1) {
+        setCurrentPage(currentPage + 1);
+      }
+    }
+  };
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
       <div className=" w-full relative shadow-md sm:rounded-lg ">
@@ -74,18 +115,6 @@ function ProductPage() {
         <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              {/* <th scope="col" className="p-4">
-                <div className="flex items-center">
-                  <input
-                    id="checkbox-all-search"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="checkbox-all-search" className="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </th> */}
               <th scope="col" className="py-3 px-6">
                 Name
               </th>
@@ -115,21 +144,6 @@ function ProductPage() {
                 key={product.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
-                {/* <td className="p-4 w-4">
-                  <div className="flex items-center">
-                    <input
-                      id="checkbox-table-search-1"
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label htmlFor="checkbox-table-search-1" className="sr-only">
-                      checkbox
-                    </label>
-                  </div>
-                </td> */}
-                {/* <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  {user.first_name}
-                </th> */}
                 <td className="py-4 px-6">{product.name}</td>
                 <td className="py-4 px-6">{product.Manufacturer.manufacturerName}</td>
                 <td className="py-4 px-6">{product.Category.type}</td>
@@ -154,13 +168,16 @@ function ProductPage() {
         {/* Pagination */}
         <nav className="flex justify-between items-center pt-4 text-base" aria-label="Table navigation">
           <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-            Showing <span className="font-semibold text-gray-900 dark:text-white">1-10</span> of{' '}
-            <span className="font-semibold text-gray-900 dark:text-white">1000</span>
+            Showing{' '}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {offSet + 1 + '-' + (offSet + limit > total ? total : offSet + limit)}{' '}
+            </span>
+            of <span className="font-semibold text-gray-900 dark:text-white">{total}</span>
           </span>
           <ul className="inline-flex items-center -space-x-px">
             <li>
-              <a
-                href="##"
+              <button
+                onClick={() => handlePreNext('pre')}
                 className="block py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 <span className="sr-only">Previous</span>
@@ -177,52 +194,25 @@ function ProductPage() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-              </a>
+              </button>
             </li>
+            {pages.map((position) => (
+              <li key={position}>
+                <button
+                  onClick={() => handlePaging(position)}
+                  className={
+                    currentPage === position
+                      ? ' text-blue-600 bg-blue-50  py-2 px-3 leading-tight hover:bg-blue-100 hover:text-blue-700 border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+                      : 'py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+                  }
+                >
+                  {position + 1}
+                </button>
+              </li>
+            ))}
             <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                aria-current="page"
-                className="z-10 py-2 px-3 leading-tight text-blue-600 bg-blue-50 border border-blue-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                ...
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
-                className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                100
-              </a>
-            </li>
-            <li>
-              <a
-                href="##"
+              <button
+                onClick={() => handlePreNext('next')}
                 className="block py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 <span className="sr-only">Next</span>
@@ -239,7 +229,7 @@ function ProductPage() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
