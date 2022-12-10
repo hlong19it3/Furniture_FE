@@ -25,11 +25,11 @@ function App() {
                 key={index}
                 path={route.path}
                 element={
-                  // <ProtectAdminRoute user={currentUser} token={token}>
-                  <Layout>
-                    <Page />
-                  </Layout>
-                  // </ProtectAdminRoute>
+                  <ProtectAdminRoute user={currentUser} token={token}>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </ProtectAdminRoute>
                 }
               />
             );
