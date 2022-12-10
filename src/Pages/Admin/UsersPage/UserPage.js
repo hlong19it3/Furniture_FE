@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Modal } from '~/components/Modal';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
@@ -7,6 +8,14 @@ const limit = 5;
 function UserPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
+  const [toggleModalCreate, setToggleModalCreate] = useState(false);
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [address, setAddress] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  console.log(firstName);
 
   const [users, setUser] = useState([]);
   const [pages, setPages] = useState([]);
@@ -17,7 +26,7 @@ function UserPage() {
   const debounced = useDebounce(searchValue, 600);
 
   const totalPage = Math.ceil(total / limit);
-  console.log(totalPage);
+
   useEffect(() => {
     getUsers();
 
@@ -95,11 +104,60 @@ function UserPage() {
       }
     }
   };
+
+  const handleSubmitCreate = () => {
+    console.log(firstName);
+    console.log(lastName);
+    console.log(address);
+    console.log(email);
+    console.log(phone);
+
+    setFirstName('');
+    setLastName('');
+    setAddress('');
+    setEmail('');
+    setPhone('');
+  };
   return (
-    <div className=" flex  flex-1 justify-center items-center p-10">
+    <div className=" flex flex-1 justify-center items-center p-10 ">
+      {toggleModalCreate && (
+        <Modal
+          inputs={[
+            {
+              lable: 'First Name',
+              value: firstName,
+              setValue: setFirstName,
+            },
+            {
+              lable: 'Last Name',
+              value: lastName,
+              setValue: setLastName,
+            },
+            {
+              lable: 'Address',
+              value: address,
+              setValue: setAddress,
+            },
+            {
+              lable: 'Email',
+              value: email,
+              setValue: setEmail,
+            },
+            {
+              lable: 'Phone',
+              value: phone,
+              setValue: setPhone,
+            },
+          ]}
+          toggleModal={() => {
+            setToggleModalCreate(false);
+          }}
+          onCLickSubmit={handleSubmitCreate}
+        />
+      )}
       <div className=" w-full relative shadow-md sm:rounded-lg ">
-        <div className="flex justify-start">
-          <div className="mb-3 xl:w-96">
+        <div className="flex justify-between">
+          <div className="mb-3 xl:w-96 justify-start">
             <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
               <input
                 value={searchValue}
@@ -110,6 +168,18 @@ function UserPage() {
                 aria-label="Search"
                 aria-describedby="button-addon2"
               />
+            </div>
+          </div>
+
+          <div className=" justify-end">
+            <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
+              <button
+                onClick={() => setToggleModalCreate(true)}
+                type="button"
+                class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+              >
+                Create
+              </button>
             </div>
           </div>
         </div>
