@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Modal } from '~/components/Modal';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
@@ -7,6 +8,10 @@ const limit = 5;
 function CategoryPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
+  const [toggleModalCreate, setToggleModalCreate] = useState(false);
+
+  const [type, setType] = useState('');
+  const [parentCategoryId, setParentCategoryId] = useState(1);
 
   const [categories, setCategory] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -97,11 +102,47 @@ function CategoryPage() {
     }
   };
 
+  const handleSubmitCreate = (e) => {
+    e.preventDefault();
+    try {
+      CustomAxios.post('/api/v1/categories/create', {
+        type,
+        parentCategoryId,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    setType(type);
+    setParentCategoryId(parentCategoryId);
+    getCategories();
+  };
+  const handleEdit = (i) => {};
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
+      {toggleModalCreate && (
+        <Modal
+          inputs={[
+            {
+              lable: 'Type',
+              value: type,
+              setValue: setType,
+            },
+            {
+              lable: 'Parent Category Id',
+              value: categories,
+              setValue: setParentCategoryId,
+              type: 'droplist',
+            },
+          ]}
+          toggleModal={() => {
+            setToggleModalCreate(false);
+          }}
+          onCLickSubmit={handleSubmitCreate}
+        />
+      )}
       <div className=" w-full relative shadow-md sm:rounded-lg ">
-        <div className="flex justify-start">
-          <div className="mb-3 xl:w-96">
+        <div className="flex justify-between">
+          <div className="mb-3 xl:w-96 justify-start">
             <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
               <input
                 value={searchValue}
@@ -114,6 +155,17 @@ function CategoryPage() {
               />
             </div>
           </div>
+          <div className=" justify-end">
+            <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
+              <button
+                onClick={() => setToggleModalCreate(true)}
+                type="button"
+                class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+              >
+                Create
+              </button>
+            </div>
+          </div>
         </div>
         <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -122,9 +174,8 @@ function CategoryPage() {
                 Type
               </th>
               <th scope="col" className="py-3 px-6">
-                Category Id
+                Parent Category Id
               </th>
-
               <th scope="col" className="py-3 px-6">
                 Action
               </th>
@@ -139,7 +190,12 @@ function CategoryPage() {
                 <td className="py-4 px-6">{category.type}</td>
                 <td className="py-4 px-6">{category.categoryId}</td>
                 <td className="py-4 px-6">
-                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
+                  <button
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={() => handleEdit(category.categoryId)}
+                  >
+                    Edit
+                  </button>
                   &ensp;
                   <button
                     onClick={() => deleteCategory(category.id)}

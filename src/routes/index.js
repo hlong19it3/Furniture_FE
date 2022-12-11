@@ -5,6 +5,7 @@ import configFile from '~/config';
 import { DashBoard } from '~/Pages/Admin/DashBoardPage';
 import { SignInPage } from '~/Pages/Admin/SignInPage';
 import AdminPages from '~/Pages/Admin';
+import UserPages from '~/Pages/User';
 
 export const adminRoutes = [
   { path: configFile.routes.admin, component: DashBoard },
@@ -26,5 +27,9 @@ export const userRoutes = [
   {
     path: configFile.routes.signUpUser,
     component: Signup,
+  },
+  {
+    path: configFile.routes.homePage,
+    component: UserPages,
   },
 ];
