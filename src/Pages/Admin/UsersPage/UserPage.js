@@ -15,7 +15,6 @@ function UserPage() {
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  console.log(firstName);
 
   const [users, setUser] = useState([]);
   const [pages, setPages] = useState([]);
@@ -155,9 +154,9 @@ function UserPage() {
           onCLickSubmit={handleSubmitCreate}
         />
       )}
-      <div className=" w-full relative shadow-md sm:rounded-lg ">
+      <div className=" w-full h-5/6 relative shadow-md sm:rounded-lg ">
         <div className="flex justify-between">
-          <div className="mb-3 xl:w-96 justify-start">
+          <div className="mb-2 xl:w-96 justify-start">
             <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
               <input
                 value={searchValue}
@@ -186,18 +185,6 @@ function UserPage() {
         <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              {/* <th scope="col" className="p-4">
-                <div className="flex items-center">
-                  <input
-                    id="checkbox-all-search"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="checkbox-all-search" className="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </th> */}
               <th scope="col" className="py-3 px-6">
                 First name
               </th>

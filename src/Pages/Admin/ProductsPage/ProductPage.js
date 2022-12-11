@@ -1,4 +1,6 @@
+import { toFormData } from 'axios';
 import { useEffect, useState } from 'react';
+import { Modal } from '~/components/Modal';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
@@ -8,8 +10,30 @@ function ProductPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
 
-  const [products, setProduct] = useState([]);
+  const [toggleModalCreate, setToggleModalCreate] = useState(false);
+  const [toggleModalEdit, setToggleModalEdit] = useState(false);
+
+  //edit id
+  const [editPreviewId, setEditPreviewId] = useState(0);
+
+  // form create or edit
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState(0);
+  const [salePrice, setSalePrice] = useState(0);
+  const [color, setColor] = useState('');
+  const [description, setDescription] = useState('');
+  const [manufacturer, setManufacturerProduct] = useState(1);
+  const [category, setCategoryProduct] = useState(1);
+  const [fileImage, setFileImage] = useState();
+
+  const [categories, setCategory] = useState([]);
+  const [manufacturers, setManufacturer] = useState([]);
+  console.log(salePrice);
+  //search
   const [searchValue, setSearchValue] = useState('');
+
+  // init
+  const [products, setProduct] = useState([]);
   const debounced = useDebounce(searchValue, 600);
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -30,6 +54,8 @@ function ProductPage() {
 
   useEffect(() => {
     getProducts();
+    getCategories();
+    getManufacturers();
     // eslint-disable-next-line
   }, []);
 
@@ -54,6 +80,19 @@ function ProductPage() {
     });
     setProduct(res.data.rows);
     setTotal(res.data.count);
+  };
+  const getCategories = async () => {
+    const res = await CustomAxios.get('/api/v1/categories/all', {
+      headers: { 'x-accesstoken': tokens.accessToken },
+    });
+    setCategory(res.data);
+  };
+  const getManufacturers = async () => {
+    const res = await CustomAxios.get('/api/v1/manufacturers/', {
+      headers: { 'x-accesstoken': tokens.accessToken },
+    });
+
+    setManufacturer(res.data);
   };
   const deleteProduct = async (id) => {
     try {
@@ -94,21 +133,233 @@ function ProductPage() {
       }
     }
   };
+  const handleSubmitCreate = () => {
+    const form = toFormData({
+      name,
+      price,
+      salePrice,
+      color,
+      description,
+      manufacturerId: manufacturer,
+      categoryId: category,
+      url: fileImage,
+    });
+    try {
+      CustomAxios.post('/api/v1/products/create', form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    setName('');
+    setPrice(0);
+    setSalePrice(0);
+    setColor('');
+    setDescription('');
+    setManufacturerProduct(1);
+    setCategoryProduct(1);
+    setFileImage();
+    getProducts();
+    setToggleModalCreate(false);
+  };
+  const handleEdit = async (id) => {
+    try {
+      const productRes = await CustomAxios.get(`/api/v1/products/${id}`, {
+        headers: { 'x-accesstoken': tokens.accessToken },
+      });
+      const res = productRes.data;
+
+      setName(res.name);
+      setPrice(res.price);
+      setColor(res.color);
+      setSalePrice(res.salePrice);
+      setDescription(res.description);
+      setManufacturerProduct(res.manufacturerId);
+      setCategoryProduct(res.categoryId);
+    } catch (error) {
+      console.log(error);
+    }
+    setEditPreviewId(id);
+    setToggleModalEdit(true);
+  };
+  const handleSubmitEdit = () => {
+    const form = toFormData({
+      name,
+      price,
+      salePrice,
+      color,
+      description,
+      manufacturerId: manufacturer,
+      categoryId: category,
+      url: fileImage,
+    });
+    try {
+      CustomAxios.put(`/api/v1/products/${editPreviewId}`, form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    setName('');
+    setPrice(0);
+    setSalePrice(0);
+    setColor('');
+    setDescription('');
+    setManufacturerProduct(1);
+    setCategoryProduct(1);
+    setFileImage();
+    getProducts();
+    setToggleModalEdit(false);
+  };
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
-      <div className=" w-full relative shadow-md sm:rounded-lg ">
-        <div className="flex justify-start">
-          <div className="mb-3 xl:w-96">
+      {toggleModalCreate && (
+        <Modal
+          inputs={[
+            {
+              lable: 'Name',
+              value: name,
+              setValue: setName,
+            },
+            {
+              lable: 'Price',
+              value: price,
+              setValue: setPrice,
+            },
+            {
+              lable: 'Sale Price',
+              value: salePrice,
+              setValue: setSalePrice,
+            },
+            {
+              lable: 'Color',
+              value: color,
+              setValue: setColor,
+            },
+            {
+              lable: 'Description',
+              value: description,
+              setValue: setDescription,
+            },
+            {
+              lable: 'Image',
+              setValue: setFileImage,
+              type: 'file',
+              name: 'url',
+            },
+            {
+              lable: 'Manufacturer',
+              value: manufacturers,
+              setValue: setManufacturerProduct,
+              type: 'droplist',
+              from: 'manufacturer',
+            },
+            {
+              lable: 'Category',
+              value: categories,
+              setValue: setCategoryProduct,
+              type: 'droplist',
+            },
+          ]}
+          toggleModal={() => {
+            setToggleModalCreate(false);
+          }}
+          onCLickSubmit={handleSubmitCreate}
+        />
+      )}
+      {toggleModalEdit && (
+        <Modal
+          inputs={[
+            {
+              lable: 'Name',
+              value: name,
+              setValue: setName,
+            },
+            {
+              lable: 'Price',
+              value: price,
+              setValue: setPrice,
+            },
+            {
+              lable: 'Sale Price',
+              value: salePrice,
+              setValue: setSalePrice,
+            },
+            {
+              lable: 'Color',
+              value: color,
+              setValue: setColor,
+            },
+            {
+              lable: 'Description',
+              value: description,
+              setValue: setDescription,
+            },
+            {
+              lable: 'Image',
+              setValue: setFileImage,
+              type: 'file',
+              name: 'url',
+            },
+            {
+              lable: 'Manufacturer',
+              value: manufacturers,
+              setValue: setManufacturerProduct,
+              type: 'droplist',
+              from: 'manufacturer',
+              defaultValue: manufacturer,
+            },
+            {
+              lable: 'Category',
+              value: categories,
+              setValue: setCategoryProduct,
+              type: 'droplist',
+              defaultValue: category,
+            },
+          ]}
+          action="edit"
+          toggleModal={() => {
+            setToggleModalEdit(false);
+            setName('');
+            setPrice(0);
+            setColor('');
+            setSalePrice(0);
+            setDescription('');
+            setManufacturerProduct(1);
+            setCategoryProduct(1);
+          }}
+          onCLickSubmit={handleSubmitEdit}
+        />
+      )}
+      <div className="w-full h-5/6 relative shadow-md sm:rounded-lg  ">
+        <div className="flex justify-between">
+          <div className="mb-3 xl:w-96 justify-start">
+            <div className="mb-3 xl:w-96">
+              <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
+                <input
+                  value={searchValue}
+                  onChange={handleSearch}
+                  type="search"
+                  className="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                  placeholder="Search"
+                  aria-label="Search"
+                  aria-describedby="button-addon2"
+                />
+              </div>
+            </div>
+          </div>
+          <div className=" justify-end">
             <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
-              <input
-                value={searchValue}
-                onChange={handleSearch}
-                type="search"
-                className="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                placeholder="Search"
-                aria-label="Search"
-                aria-describedby="button-addon2"
-              />
+              <button
+                onClick={() => setToggleModalCreate(true)}
+                class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+              >
+                Create
+              </button>
             </div>
           </div>
         </div>
@@ -128,6 +379,9 @@ function ProductPage() {
                 Price
               </th>
               <th scope="col" className="py-3 px-6">
+                Sale Price
+              </th>
+              <th scope="col" className="py-3 px-6">
                 Color
               </th>
               <th scope="col" className="py-3 px-6">
@@ -145,13 +399,21 @@ function ProductPage() {
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 <td className="py-4 px-6">{product.name}</td>
-                <td className="py-4 px-6">{product.Manufacturer.manufacturerName}</td>
+                <td className="py-4 px-6">
+                  {product.Manufacturer.manufacturerName ? product.Manufacturer.manufacturerName : ''}
+                </td>
                 <td className="py-4 px-6">{product.Category.type}</td>
+                <td className="py-4 px-6">{product.price}</td>
                 <td className="py-4 px-6">{product.salePrice}</td>
                 <td className="py-4 px-6">{product.color}</td>
-                <td className="py-4 px-6">{product.description}</td>
+                <td className="py-4 px-6">{product.description.slice(0, 20)}</td>
                 <td className="py-4 px-6">
-                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
+                  <button
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={() => handleEdit(product.id)}
+                  >
+                    Edit
+                  </button>
                   &ensp;
                   <button
                     onClick={() => deleteProduct(product.id)}
