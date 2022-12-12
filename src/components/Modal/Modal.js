@@ -1,6 +1,6 @@
 function Modal({ onCLickSubmit, toggleModal, action = 'create', inputs = [] }) {
   return (
-    <div className=" absolute top-0 left-0 z-50  w-full h-full bg-gray-400/50 ">
+    <div className=" absolute top-0 left-0 z-50  w-full h-full bg-gray-400/50 overflow-y-auto	 ">
       <div className="flex flex-1 justify-center items-center  pt-2">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700 w-2/5">
           <button

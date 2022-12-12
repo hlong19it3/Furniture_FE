@@ -1,11 +1,11 @@
 import React from 'react';
-import Signup from '~/components/Signup/Signup';
 import Signin from '~/components/Signin/Signin';
+import Signup from '~/components/Signup/Signup';
 import configFile from '~/config';
+import AdminPages from '~/Pages/Admin';
 import { DashBoard } from '~/Pages/Admin/DashBoardPage';
 import { SignInPage } from '~/Pages/Admin/SignInPage';
-import AdminPages from '~/Pages/Admin';
-import UserPages from '~/Pages/User';
+import { HomePage } from '~/Pages/User/HomePage';
 
 export const adminRoutes = [
   { path: configFile.routes.admin, component: DashBoard },
@@ -29,7 +29,7 @@ export const userRoutes = [
     component: Signup,
   },
   {
-    path: configFile.routes.homePage,
-    component: UserPages,
+    path: configFile.routes.home,
+    component: HomePage,
   },
 ];

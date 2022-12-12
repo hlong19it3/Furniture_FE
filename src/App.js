@@ -5,6 +5,7 @@ import { AuthContext } from './contexts/AuthContextProvider';
 import { AdminLayout } from './layouts/AdminLayout';
 import { adminRoutes, userRoutes } from './routes';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { UserLayout } from './layouts/UserLayout';
 function App() {
   const [token, currentUser] = useContext(AuthContext);
 
@@ -36,11 +37,21 @@ function App() {
           })}
           {userRoutes.map((route, index) => {
             const Page = route.component;
-            // let Layout = AdminLayout;
-            // if (route.layout) {
-            //   Layout = route.layout;
-            // }
-            return <Route key={index} path={route.path} element={<Page />} />;
+            let Layout = UserLayout;
+            if (route.layout) {
+              Layout = route.layout;
+            }
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Page />
+                  </Layout>
+                }
+              />
+            );
           })}
         </Routes>
       </div>
