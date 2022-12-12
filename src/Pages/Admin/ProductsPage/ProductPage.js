@@ -7,9 +7,6 @@ import useDebounce from '~/hooks/useDebounce';
 const limit = 5;
 
 function ProductPage() {
-  // const accessToken = localStorage.getItem();
-  // axios.interceptors.request.use()
-
   const [toggleModalCreate, setToggleModalCreate] = useState(false);
   const [toggleModalEdit, setToggleModalEdit] = useState(false);
 
@@ -263,6 +260,7 @@ function ProductPage() {
               value: categories,
               setValue: setCategoryProduct,
               type: 'droplist',
+              from: 'categoryChildren',
             },
           ]}
           toggleModal={() => {
@@ -319,6 +317,7 @@ function ProductPage() {
               setValue: setCategoryProduct,
               type: 'droplist',
               defaultValue: category,
+              from: 'categoryChildren',
             },
           ]}
           action="edit"

@@ -1,21 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Modal } from '~/components/Modal';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
 const limit = 5;
 
 function UserPage() {
-  // const accessToken = localStorage.getItem();
-  // axios.interceptors.request.use()
-  const [toggleModalCreate, setToggleModalCreate] = useState(false);
-
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [address, setAddress] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-
   const [users, setUser] = useState([]);
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -104,56 +93,8 @@ function UserPage() {
     }
   };
 
-  const handleSubmitCreate = () => {
-    console.log(firstName);
-    console.log(lastName);
-    console.log(address);
-    console.log(email);
-    console.log(phone);
-
-    setFirstName('');
-    setLastName('');
-    setAddress('');
-    setEmail('');
-    setPhone('');
-  };
   return (
     <div className=" flex flex-1 justify-center items-center p-10 ">
-      {toggleModalCreate && (
-        <Modal
-          inputs={[
-            {
-              lable: 'First Name',
-              value: firstName,
-              setValue: setFirstName,
-            },
-            {
-              lable: 'Last Name',
-              value: lastName,
-              setValue: setLastName,
-            },
-            {
-              lable: 'Address',
-              value: address,
-              setValue: setAddress,
-            },
-            {
-              lable: 'Email',
-              value: email,
-              setValue: setEmail,
-            },
-            {
-              lable: 'Phone',
-              value: phone,
-              setValue: setPhone,
-            },
-          ]}
-          toggleModal={() => {
-            setToggleModalCreate(false);
-          }}
-          onCLickSubmit={handleSubmitCreate}
-        />
-      )}
       <div className=" w-full h-5/6 relative shadow-md sm:rounded-lg ">
         <div className="flex justify-between">
           <div className="mb-2 xl:w-96 justify-start">
@@ -167,18 +108,6 @@ function UserPage() {
                 aria-label="Search"
                 aria-describedby="button-addon2"
               />
-            </div>
-          </div>
-
-          <div className=" justify-end">
-            <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
-              <button
-                onClick={() => setToggleModalCreate(true)}
-                type="button"
-                class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-              >
-                Create
-              </button>
             </div>
           </div>
         </div>
@@ -211,21 +140,6 @@ function UserPage() {
                 key={user.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
-                {/* <td className="p-4 w-4">
-                  <div className="flex items-center">
-                    <input
-                      id="checkbox-table-search-1"
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label htmlFor="checkbox-table-search-1" className="sr-only">
-                      checkbox
-                    </label>
-                  </div>
-                </td> */}
-                {/* <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  {user.first_name}
-                </th> */}
                 <td className="py-4 px-6">{user.firstName}</td>
                 <td className="py-4 px-6">{user.lastName}</td>
                 <td className="py-4 px-6">{user.address}</td>
