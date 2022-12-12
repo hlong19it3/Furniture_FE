@@ -6,12 +6,17 @@ import useDebounce from '~/hooks/useDebounce';
 const limit = 5;
 
 function CategoryPage() {
-  // const accessToken = localStorage.getItem();
-  // axios.interceptors.request.use()
   const [toggleModalCreate, setToggleModalCreate] = useState(false);
+  const [toggleModalEdit, setToggleModalEdit] = useState(false);
 
+  //edit id
+  const [editPreviewId, setEditPreviewId] = useState(0);
+  // const [categorySelect, setCategorySelect] = useState(1);
+
+  // form create or edit
   const [type, setType] = useState('');
-  const [parentCategoryId, setParentCategoryId] = useState(1);
+  const [parentCategory, setParentCategory] = useState([]);
+  const [parentCategoryId, setParentCategoryId] = useState();
 
   const [categories, setCategory] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -35,6 +40,7 @@ function CategoryPage() {
 
   useEffect(() => {
     getCategories();
+    getCategoriesAll();
     // eslint-disable-next-line
   }, []);
 
@@ -60,6 +66,13 @@ function CategoryPage() {
     setCategory(res.data.rows);
     setTotal(res.data.count);
   };
+  const getCategoriesAll = async () => {
+    const res = await CustomAxios.get('/api/v1/categories/all-parents', {
+      headers: { 'x-accesstoken': tokens.accessToken },
+    });
+
+    setParentCategory(res.data);
+  };
 
   const deleteCategory = async (id) => {
     try {
@@ -75,7 +88,6 @@ function CategoryPage() {
       const res = await CustomAxios.get(`/api/v1/categories/search/${value}`, {
         headers: { 'x-accesstoken': tokens.accessToken },
       });
-
       setCategory(res.data);
     } catch (error) {
       console.log(error);
@@ -112,11 +124,41 @@ function CategoryPage() {
     } catch (error) {
       console.log(error);
     }
-    setType(type);
-    setParentCategoryId(parentCategoryId);
+    setType('');
+    setParentCategoryId();
+    getCategories();
+    setToggleModalCreate(false);
+  };
+  const handleEdit = async (id) => {
+    try {
+      const categoryRes = await CustomAxios.get(`/api/v1/categories/${id}`, {
+        headers: { 'x-accesstoken': tokens.accessToken },
+      });
+      const res = categoryRes.data;
+      console.log(res);
+      setType(res.type);
+      setParentCategoryId(res.categoryId);
+    } catch (error) {
+      console.log(error);
+    }
+    setEditPreviewId(id);
+    setToggleModalEdit(true);
+  };
+  const handleSubmitEdit = () => {
+    try {
+      CustomAxios.put(`/api/v1/categories/${editPreviewId}`, {
+        headers: { 'x-accesstoken': tokens.accessToken },
+        type,
+        parentCategoryId,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    setType('');
+    setParentCategoryId(0);
+    setToggleModalEdit(false);
     getCategories();
   };
-  const handleEdit = (i) => {};
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
       {toggleModalCreate && (
@@ -129,9 +171,10 @@ function CategoryPage() {
             },
             {
               lable: 'Parent Category Id',
-              value: categories,
+              value: parentCategory,
               setValue: setParentCategoryId,
               type: 'droplist',
+              from: 'categoryParent',
             },
           ]}
           toggleModal={() => {
@@ -140,7 +183,33 @@ function CategoryPage() {
           onCLickSubmit={handleSubmitCreate}
         />
       )}
-      <div className=" w-full relative shadow-md sm:rounded-lg ">
+      {toggleModalEdit && (
+        <Modal
+          inputs={[
+            {
+              lable: 'Type',
+              value: type,
+              setValue: setType,
+            },
+            {
+              lable: 'Parent Category Id',
+              value: parentCategory,
+              setValue: setParentCategoryId,
+              defaultValue: parentCategoryId,
+              type: 'droplist',
+              from: 'categoryParent',
+            },
+          ]}
+          action="edit"
+          toggleModal={() => {
+            setToggleModalEdit(false);
+            setType('');
+            setParentCategoryId(1);
+          }}
+          onCLickSubmit={handleSubmitEdit}
+        />
+      )}
+      <div className=" w-full h-5/6 relative shadow-md sm:rounded-lg ">
         <div className="flex justify-between">
           <div className="mb-3 xl:w-96 justify-start">
             <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
@@ -171,6 +240,9 @@ function CategoryPage() {
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="py-3 px-6">
+                Category Id
+              </th>
+              <th scope="col" className="py-3 px-6">
                 Type
               </th>
               <th scope="col" className="py-3 px-6">
@@ -187,12 +259,13 @@ function CategoryPage() {
                 key={category.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
+                <td className="py-4 px-6">{category.id}</td>
                 <td className="py-4 px-6">{category.type}</td>
-                <td className="py-4 px-6">{category.categoryId}</td>
+                <td className="py-4 px-6">{category.categoryId ? category.categoryId : 'Main category'}</td>
                 <td className="py-4 px-6">
                   <button
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    onClick={() => handleEdit(category.categoryId)}
+                    onClick={() => handleEdit(category.id)}
                   >
                     Edit
                   </button>
@@ -206,6 +279,7 @@ function CategoryPage() {
                 </td>
               </tr>
             ))}
+            ;
           </tbody>
         </table>
 

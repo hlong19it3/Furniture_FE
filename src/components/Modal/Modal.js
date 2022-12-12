@@ -36,9 +36,12 @@ function Modal({ onCLickSubmit, toggleModal, action = 'create', inputs = [] }) {
                         onChange={(e) => input.setValue(e.target.value)}
                         defaultValue={action === 'edit' && input.defaultValue}
                       >
+                        {action === 'create' && <option value={null}>----Null----</option>}
+
                         {input.value.map((value) => (
                           <option key={value.id} value={value.id}>
-                            {input.from === 'manufacturer' ? value.manufacturerName : value.type}
+                            {input.from === 'manufacturer' && value.manufacturerName}
+                            {(input.from === 'categoryParent') | (input.from === 'categoryChildren') && value.type}
                           </option>
                         ))}
                       </select>
