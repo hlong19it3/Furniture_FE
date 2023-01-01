@@ -27,6 +27,7 @@ function CategoryPage() {
   const [total, setTotal] = useState(0);
 
   const totalPage = Math.ceil(total / limit);
+  console.log(pages);
 
   useEffect(() => {
     let page = [];
@@ -63,6 +64,7 @@ function CategoryPage() {
         offset: offSet,
       },
     });
+
     setCategory(res.data.rows);
     setTotal(res.data.count);
   };
@@ -106,10 +108,20 @@ function CategoryPage() {
     if (status === 'pre') {
       if (currentPage > 0) {
         setCurrentPage(currentPage - 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage - 1) * limit);
+          }
+        });
       }
     } else {
       if (currentPage < total / limit - 1) {
         setCurrentPage(currentPage + 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage + 1) * limit);
+          }
+        });
       }
     }
   };
@@ -117,10 +129,16 @@ function CategoryPage() {
   const handleSubmitCreate = (e) => {
     e.preventDefault();
     try {
-      CustomAxios.post('/api/v1/categories/create', {
-        type,
-        parentCategoryId,
-      });
+      CustomAxios.post(
+        '/api/v1/categories/create',
+        {
+          type,
+          parentCategoryId,
+        },
+        {
+          headers: { 'x-accesstoken': tokens.accessToken },
+        },
+      );
     } catch (error) {
       console.log(error);
     }
@@ -135,8 +153,9 @@ function CategoryPage() {
         headers: { 'x-accesstoken': tokens.accessToken },
       });
       const res = categoryRes.data;
-      console.log(res);
+
       setType(res.type);
+      // setParentCategoryId(res.Category.id);
       setParentCategoryId(res.categoryId);
     } catch (error) {
       console.log(error);
@@ -144,13 +163,18 @@ function CategoryPage() {
     setEditPreviewId(id);
     setToggleModalEdit(true);
   };
-  const handleSubmitEdit = () => {
+  const handleSubmitEdit = async () => {
     try {
-      CustomAxios.put(`/api/v1/categories/${editPreviewId}`, {
-        headers: { 'x-accesstoken': tokens.accessToken },
-        type,
-        parentCategoryId,
-      });
+      await CustomAxios.put(
+        `/api/v1/categories/${editPreviewId}`,
+        {
+          type,
+          parentCategoryId,
+        },
+        {
+          headers: { 'x-accesstoken': tokens.accessToken },
+        },
+      );
     } catch (error) {
       console.log(error);
     }
@@ -168,6 +192,7 @@ function CategoryPage() {
               lable: 'Type',
               value: type,
               setValue: setType,
+              placeHolder: 'Type',
             },
             {
               lable: 'Parent Category Id',
@@ -175,6 +200,7 @@ function CategoryPage() {
               setValue: setParentCategoryId,
               type: 'droplist',
               from: 'categoryParent',
+              selectTitle: 'Select Parent Category',
             },
           ]}
           toggleModal={() => {
@@ -198,6 +224,7 @@ function CategoryPage() {
               defaultValue: parentCategoryId,
               type: 'droplist',
               from: 'categoryParent',
+              selectTitle: 'Select Parent Category',
             },
           ]}
           action="edit"
@@ -229,7 +256,7 @@ function CategoryPage() {
               <button
                 onClick={() => setToggleModalCreate(true)}
                 type="button"
-                class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                className="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
               >
                 Create
               </button>

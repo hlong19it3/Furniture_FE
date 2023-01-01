@@ -1,118 +1,147 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 // import { BiChat, BiSearch, BiUserCircle } from 'react-icons/bi';
-import { BsFillBarChartFill } from 'react-icons/bs';
+import { BsFillCartFill } from 'react-icons/bs';
+import { RiProfileLine, RiLockPasswordLine } from 'react-icons/ri';
+import { FaUserAlt } from 'react-icons/fa';
+import { HiOutlineClipboardList } from 'react-icons/hi';
+import { Link, useNavigate } from 'react-router-dom';
+import HeadlessTippy from '@tippyjs/react/headless';
 
+import configFile from '~/config';
+import { AuthContext } from '~/contexts/AuthContextProvider';
+import useCartContext from '~/hooks/useCartContext';
+import { Search } from '../Search';
+
+const MENU = [
+  {
+    icon: RiProfileLine,
+    href: configFile.routes.profile,
+    title: 'My Profile',
+  },
+  {
+    icon: HiOutlineClipboardList,
+    href: configFile.routes.orderHistory,
+    title: 'My Orders',
+  },
+  {
+    icon: RiLockPasswordLine,
+    href: configFile.routes.changePassword,
+    title: 'Change Password',
+  },
+];
 function Header() {
-  return (
-    <>
-      <header class="py-4 shadow-sm bg-white">
-        <div class="container flex items-center justify-between">
-          <a href="index.html">
-            <img src="../assets/images/logo.svg" alt="Logo" class="w-32" />
-          </a>
+  const nav = useNavigate();
+  const [token, currentUser, setToken, setCurrentUser] = useContext(AuthContext);
+  const [stateCart, dispatchCart] = useCartContext();
 
-          <div class="w-full max-w-xl relative flex">
-            <span class="absolute left-4 top-3 text-lg text-gray-400">
-              <i class="fa-solid fa-magnifying-glass"></i>
-            </span>
-            <input
-              type="text"
-              name="search"
-              id="search"
-              class="w-full border border-primary border-r-0 pl-12 py-3 pr-3 rounded-l-md focus:outline-none"
-              placeholder="search"
+  const [showTippy, setShowTippy] = useState(false);
+  const handleLogin = () => {
+    nav('/signin');
+  };
+  const handleSignOut = () => {
+    localStorage.removeItem('userInfo');
+    setCurrentUser('');
+    nav('/');
+  };
+  const tokens = localStorage.getItem('userInfo');
+  const showOnClick = () => {
+    setShowTippy(!showTippy);
+  };
+  return (
+    <div className="z-50 top-0 sticky">
+      <header className="flex py-4 shadow-sm bg-white h-24 ">
+        <div className="container flex items-center justify-between">
+          <Link to={configFile.routes.home}>
+            <img
+              src="https://marketplace.canva.com/EAFN9EmLAUY/1/0/1600w/canva-black-minimalist-furniture-logo-IBXwe4b5u8M.jpg"
+              alt="Logo"
+              className="w-32"
             />
-            <button class="bg-primary border border-primary text-white px-8 rounded-r-md hover:bg-transparent hover:text-primary transition">
-              Search
-            </button>
+          </Link>
+
+          <div className="w-full max-w-xl relative flex">
+            <Search />
           </div>
 
-          <div class="flex items-center space-x-4">
-            <a href="##" class="text-center text-gray-700 hover:text-primary transition relative">
-              <div class="text-2xl">
-                <i class="fa-regular fa-heart"></i>
+          <div className="flex items-center space-x-4">
+            <Link
+              to={configFile.routes.cart}
+              className="text-center text-gray-700 hover:text-primary transition relative mr-4"
+            >
+              <BsFillCartFill className="w-7 h-7" />
+
+              <div className="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
+                {stateCart ? stateCart.length : 0}
               </div>
-              <div class="text-xs leading-3">Wishlist</div>
-              <div class="absolute right-0 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-primary text-white text-xs">
-                8
+            </Link>
+            <HeadlessTippy
+              interactive
+              visible={showTippy}
+              onClickOutside={() => setShowTippy(false)}
+              render={(attrs) => (
+                <div
+                  className="flex flex-col w-64  rounded-lg border border-slate-700 p-2 bg-white"
+                  tabIndex="-1"
+                  {...attrs}
+                >
+                  {MENU.map((menu, index) => (
+                    <Link
+                      key={index}
+                      to={menu.href}
+                      className="flex justify-start items-center w-full py-2 px-3 text-lg hover:bg-slate-500 hover:text-white"
+                    >
+                      <menu.icon className="font-bold text-3xl flex-[0.3]" />
+                      <div className="text-lg font-semibold flex-[0.7]">{menu.title}</div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            >
+              <div className=" flex items-center text-gray-700 hover:text-blue-700 transition relative">
+                <button className="border-none outline-none" onClick={showOnClick}>
+                  <FaUserAlt className="w-7 h-7" />
+                </button>
               </div>
-            </a>
-            <a href="##" class="text-center text-gray-700 hover:text-primary transition relative">
-              <div class="text-2xl">
-                <i class="fa-solid fa-bag-shopping"></i>
-              </div>
-              <div class="text-xs leading-3">Cart</div>
-              <div class="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-primary text-white text-xs">
-                2
-              </div>
-            </a>
-            <a href="##" class="text-center text-gray-700 hover:text-primary transition relative">
-              <div class="text-2xl">
-                <i class="fa-regular fa-user"></i>
-              </div>
-              <div class="text-xs leading-3">Account</div>
-            </a>
+            </HeadlessTippy>
           </div>
         </div>
       </header>
-      <nav class="bg-gray-800">
-        <div class="container flex">
-          <div class="px-8 py-4 bg-primary flex items-center cursor-pointer relative group">
-            <span class="text-white">
-              <i class="fa-solid fa-bars"></i>
+      <nav className="bg-gray-800 ">
+        <div className="container flex">
+          <div className="px-8 py-4 bg-slate-500 flex items-center cursor-pointer relative group">
+            <span className="text-white">
+              <i className="fa-solid fa-bars"></i>
             </span>
-            <span class="capitalize ml-2 text-white">All Categories</span>
+            <span className="capitalize ml-2 text-white">Shop</span>
 
-            <div class="absolute w-full left-0 top-full bg-white shadow-md py-3 divide-y divide-gray-300 divide-dashed opacity-0 group-hover:opacity-100 transition duration-300 invisible group-hover:visible">
-              <a href="##" class="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                <img src="../assets/images/icons/sofa.svg" alt="sofa" class="w-5 h-5 object-contain" />
-                <span class="ml-6 text-gray-600 text-sm">Sofa</span>
-              </a>
-              <a href="##" class="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                <img src="../assets/images/icons/terrace.svg" alt="terrace" class="w-5 h-5 object-contain" />
-                <span class="ml-6 text-gray-600 text-sm">Terarce</span>
-              </a>
-              <a href="##" class="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                <img src="../assets/images/icons/bed.svg" alt="bed" class="w-5 h-5 object-contain" />
-                <span class="ml-6 text-gray-600 text-sm">Bed</span>
-              </a>
-              <a href="##" class="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                <img src="../assets/images/icons/office.svg" alt="office" class="w-5 h-5 object-contain" />
-                <span class="ml-6 text-gray-600 text-sm">office</span>
-              </a>
-              <a href="##" class="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                <img src="../assets/images/icons/outdoor-cafe.svg" alt="outdoor" class="w-5 h-5 object-contain" />
-                <span class="ml-6 text-gray-600 text-sm">Outdoor</span>
-              </a>
-              <a href="##" class="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                <img src="../assets/images/icons/bed-2.svg" alt="Mattress" class="w-5 h-5 object-contain" />
-                <span class="ml-6 text-gray-600 text-sm">Mattress</span>
-              </a>
-            </div>
+            <div className="absolute w-full left-0 top-full bg-white shadow-md py-3 divide-y divide-gray-300 divide-dashed opacity-0 group-hover:opacity-100 transition duration-300 invisible group-hover:visible"></div>
           </div>
 
-          <div class="flex items-center justify-between flex-grow pl-12">
-            <div class="flex items-center space-x-6 capitalize">
-              <a href="../index.html" class="text-gray-200 hover:text-white transition">
+          <div className="flex items-center justify-between flex-grow pl-12">
+            <div className="flex items-center space-x-6 capitalize">
+              <a href="../" className="text-gray-200 hover:text-white transition">
                 Home
               </a>
-              <a href="pages/shop.html" class="text-gray-200 hover:text-white transition">
-                Shop
-              </a>
-              <a href="##" class="text-gray-200 hover:text-white transition">
+              <a href="##" className="text-gray-200 hover:text-white transition">
                 About us
               </a>
-              <a href="##" class="text-gray-200 hover:text-white transition">
+              <a href="##" className="text-gray-200 hover:text-white transition">
                 Contact us
               </a>
             </div>
-            <a href="##" class="text-gray-200 hover:text-white transition">
-              Login/Register
-            </a>
+            {tokens ? (
+              <button href="##" onClick={handleSignOut} className="text-gray-200 hover:text-white transition">
+                Sign out
+              </button>
+            ) : (
+              <button href="##" onClick={handleLogin} className="text-gray-200 hover:text-white transition">
+                Sign in/Sign up
+              </button>
+            )}
           </div>
         </div>
       </nav>
-    </>
+    </div>
   );
 }
 

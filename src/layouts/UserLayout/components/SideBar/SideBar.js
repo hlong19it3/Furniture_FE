@@ -1,228 +1,187 @@
+import Tippy from '@tippyjs/react';
+import { useContext, useEffect, useState } from 'react';
+import { RiFilterOffFill } from 'react-icons/ri';
+
+import { Wrapper } from '~/components/SideBarContentWrapper';
+import CustomAxios from '~/config/api';
+import { FilterContext } from '~/contexts/FilterContextProvider';
+import { clearFilter, setCategory, setColor, setManufacturer } from '~/reducers/filterReducer';
+import SubCategory from './SubCategory';
+
 function SideBar() {
+  // const tokens = JSON.parse(localStorage.getItem('userInfo'));
+  const [stateFilter, dispatchFilter] = useContext(FilterContext);
+  // console.log(stateFilter);
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+
+  const [manufacturers, setManufacturers] = useState([]);
+  const [allColors, setAllColors] = useState([]);
+  const [showSubCategory, setShowSubCategory] = useState(-1);
+
+  // const [color, setColor] = useState('');
+
+  const getCategoriesAll = async () => {
+    const res = await CustomAxios.get('/api/v1/categories/all', {});
+    setCategories(res.data);
+  };
+
+  const getSubCategoriesByParentCategoryId = async (parentCategoryId) => {
+    const result = await CustomAxios.get(`/api/v1/categories/parent/${parentCategoryId}`);
+    setSubCategories(result.data);
+  };
+
+  const getManufacturersAll = async () => {
+    const res = await CustomAxios.get('/api/v1/manufacturers/all');
+
+    setManufacturers(res.data);
+  };
+
+  const getAllColors = async () => {
+    const res = await CustomAxios.get('/api/v1/products/all-colors');
+    setAllColors(res.data);
+  };
+
+  useEffect(() => {
+    getCategoriesAll();
+    getManufacturersAll();
+    getAllColors();
+    getSubCategoriesByParentCategoryId();
+    // eslint-disable-next-line
+  }, []);
+
+  const handleSubcategory = (id) => {
+    dispatchFilter(setCategory(id));
+  };
   return (
-    <div class="col-span-1 bg-white px-4 pb-6 shadow rounded overflow-hidden">
-      <div class="divide-y divide-gray-200 space-y-5">
-        <div>
-          <h3 class="text-xl text-gray-800 mb-3 uppercase font-medium">Categories</h3>
-          <div class="space-y-2">
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="cat-1"
-                id="cat-1"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="cat-1" class="text-gray-600 ml-3 cusror-pointer">
-                Bedroom
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(15)</div>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="cat-2"
-                id="cat-2"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="cat-2" class="text-gray-600 ml-3 cusror-pointer">
-                Sofa
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(9)</div>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="cat-3"
-                id="cat-3"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="cat-3" class="text-gray-600 ml-3 cusror-pointer">
-                Office
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(21)</div>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="cat-4"
-                id="cat-4"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="cat-4" class="text-gray-600 ml-3 cusror-pointer">
-                Outdoor
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(10)</div>
-            </div>
+    <div className="col-span-1 bg-white px-4 pb-6 shadow rounded ">
+      <div className="divide-y divide-gray-200 space-y-5">
+        <div className="w-full h-6 flex items-center my-3 px-2">
+          <div className="flex-1 flex justify-end items-center">
+            {(stateFilter.categoryId !== 0) | (stateFilter.manufacturerId !== 0) | (stateFilter.color !== '') ? (
+              <Tippy content="Clear filter" placement="right">
+                <div
+                  onClick={() => dispatchFilter(clearFilter())}
+                  className="flex-[0.1]  p-1 rounded-full cursor-pointer flex justify-center items-center text-slate-200 bg-slate-500 hover:bg-slate-600 hover:text-white"
+                >
+                  <RiFilterOffFill />
+                </div>
+              </Tippy>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
-
-        <div class="pt-4">
-          <h3 class="text-xl text-gray-800 mb-3 uppercase font-medium">Brands</h3>
-          <div class="space-y-2">
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="brand-1"
-                id="brand-1"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="brand-1" class="text-gray-600 ml-3 cusror-pointer">
-                Cooking Color
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(15)</div>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="brand-2"
-                id="brand-2"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="brand-2" class="text-gray-600 ml-3 cusror-pointer">
-                Magniflex
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(9)</div>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="brand-3"
-                id="brand-3"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="brand-3" class="text-gray-600 ml-3 cusror-pointer">
-                Ashley
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(21)</div>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="brand-4"
-                id="brand-4"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="brand-4" class="text-gray-600 ml-3 cusror-pointer">
-                M&D
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(10)</div>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                name="brand-5"
-                id="brand-5"
-                class="text-primary focus:ring-0 rounded-sm cursor-pointer"
-              />
-              <label for="brand-5" class="text-gray-600 ml-3 cusror-pointer">
-                Olympic
-              </label>
-              <div class="ml-auto text-gray-600 text-sm">(10)</div>
-            </div>
+        <Wrapper title={'CATEGORIES'} className="m-0">
+          <div className="space-y-2">
+            {categories.map((category, index) => {
+              return (
+                !category.categoryId && (
+                  <div className="flex items-center  cursor-pointer" key={category.id}>
+                    <div
+                      className="flex items-center  cursor-pointer"
+                      onClick={() => dispatchFilter(setCategory(category.id))}
+                    >
+                      <input
+                        type="radio"
+                        name="cat-1"
+                        id={`cat-${category.id}`}
+                        className="text-primary focus:ring-0 rounded-sm"
+                        checked={stateFilter.categoryId === category.id ? true : false}
+                        readOnly
+                      />
+                      <div
+                        htmlFor={`cat-${category.id}`}
+                        className="text-gray-600 ml-3 cusror-pointer"
+                        onMouseEnter={() => {
+                          setShowSubCategory(category.id);
+                          getSubCategoriesByParentCategoryId(category.id);
+                        }}
+                      >
+                        {category.type}
+                      </div>
+                    </div>
+                    <SubCategory
+                      title={category.type}
+                      contents={subCategories}
+                      showSubCategory={showSubCategory === category.id}
+                      setShowSubCategory={setShowSubCategory}
+                      onClick={handleSubcategory}
+                      checked={stateFilter.categoryId}
+                    />
+                  </div>
+                )
+              );
+            })}
           </div>
-        </div>
+        </Wrapper>
 
-        <div class="pt-4">
-          <h3 class="text-xl text-gray-800 mb-3 uppercase font-medium">Price</h3>
-          <div class="mt-4 flex items-center">
+        <Wrapper className="pt-4" title={'Manufacturers'}>
+          <div className="space-y-2">
+            {manufacturers.map((manufacturer, index) => (
+              <div
+                className="flex items-center cursor-pointer"
+                key={manufacturer.id}
+                onClick={() => dispatchFilter(setManufacturer(manufacturer.id))}
+              >
+                <input
+                  type="radio"
+                  name="brand-1"
+                  id={`brand-${manufacturer.id}`}
+                  className="text-primary focus:ring-0 rounded-xl cursor-pointer"
+                  checked={stateFilter.manufacturerId === manufacturer.id ? true : false}
+                  readOnly
+                />
+                <div htmlFor={`brand-${manufacturer.id}`} className="text-gray-600 ml-3 cusror-pointer">
+                  {manufacturer.manufacturerName}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Wrapper>
+
+        {/* <Wrapper className="pt-4" title={'Price'}>
+          <div className="mt-4 flex items-center">
             <input
               type="text"
               name="min"
               id="min"
-              class="w-full border-gray-300 focus:border-primary rounded focus:ring-0 px-3 py-1 text-gray-600 shadow-sm"
+              className="w-full border-gray-300 focus:border-primary rounded focus:ring-0 px-3 py-1 text-gray-600 shadow-sm"
               placeholder="min"
             />
-            <span class="mx-3 text-gray-500">-</span>
+            <span className="mx-3 text-gray-500">-</span>
             <input
               type="text"
               name="max"
               id="max"
-              class="w-full border-gray-300 focus:border-primary rounded focus:ring-0 px-3 py-1 text-gray-600 shadow-sm"
+              className="w-full border-gray-300 focus:border-primary rounded focus:ring-0 px-3 py-1 text-gray-600 shadow-sm"
               placeholder="max"
             />
           </div>
-        </div>
+        </Wrapper> */}
 
-        <div class="pt-4">
-          <h3 class="text-xl text-gray-800 mb-3 uppercase font-medium">size</h3>
-          <div class="flex items-center gap-2">
-            <div class="size-selector">
-              <input type="radio" name="size" id="size-xs" class="hidden" />
-              <label
-                for="size-xs"
-                class="text-xs border border-gray-200 rounded-sm h-6 w-6 flex items-center justify-center cursor-pointer shadow-sm text-gray-600"
-              >
-                XS
-              </label>
-            </div>
-            <div class="size-selector">
-              <input type="radio" name="size" id="size-sm" class="hidden" />
-              <label
-                for="size-sm"
-                class="text-xs border border-gray-200 rounded-sm h-6 w-6 flex items-center justify-center cursor-pointer shadow-sm text-gray-600"
-              >
-                S
-              </label>
-            </div>
-            <div class="size-selector">
-              <input type="radio" name="size" id="size-m" class="hidden" />
-              <label
-                for="size-m"
-                class="text-xs border border-gray-200 rounded-sm h-6 w-6 flex items-center justify-center cursor-pointer shadow-sm text-gray-600"
-              >
-                M
-              </label>
-            </div>
-            <div class="size-selector">
-              <input type="radio" name="size" id="size-l" class="hidden" />
-              <label
-                for="size-l"
-                class="text-xs border border-gray-200 rounded-sm h-6 w-6 flex items-center justify-center cursor-pointer shadow-sm text-gray-600"
-              >
-                L
-              </label>
-            </div>
-            <div class="size-selector">
-              <input type="radio" name="size" id="size-xl" class="hidden" />
-              <label
-                for="size-xl"
-                class="text-xs border border-gray-200 rounded-sm h-6 w-6 flex items-center justify-center cursor-pointer shadow-sm text-gray-600"
-              >
-                XL
-              </label>
-            </div>
+        <Wrapper className="pt-4" title={'Color'}>
+          <div className="flex items-center gap-2">
+            {allColors.map((color, index) => (
+              <div key={index} className="color-selector" onClick={(e) => dispatchFilter(setColor(e.target.value))}>
+                <input
+                  value={color}
+                  type="radio"
+                  name="color"
+                  id={`color-${color}`}
+                  className="hidden"
+                  checked={stateFilter.color === color ? true : false}
+                  readOnly
+                />
+                <label
+                  htmlFor={`color-${color}`}
+                  className="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
+                  style={{ backgroundColor: color }}
+                ></label>
+              </div>
+            ))}
           </div>
-        </div>
-
-        <div class="pt-4">
-          <h3 class="text-xl text-gray-800 mb-3 uppercase font-medium">Color</h3>
-          <div class="flex items-center gap-2">
-            <div class="color-selector">
-              <input type="radio" name="color" id="red" class="hidden" />
-              <label
-                for="red"
-                class="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
-                style={{ backgroundColor: ' #fc3d57' }}
-              ></label>
-            </div>
-            <div class="color-selector">
-              <input type="radio" name="color" id="black" class="hidden" />
-              <label
-                for="black"
-                class="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
-                style={{ backgroundColor: '#000' }}
-              ></label>
-            </div>
-            <div class="color-selector">
-              <input type="radio" name="color" id="white" class="hidden" />
-              <label
-                for="white"
-                class="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
-                style={{ backgroundColor: ' #fff' }}
-              ></label>
-            </div>
-          </div>
-        </div>
+        </Wrapper>
       </div>
     </div>
   );

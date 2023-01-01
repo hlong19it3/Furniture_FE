@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ModalDetail } from '~/components/ModalDetail';
+
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
@@ -7,6 +9,9 @@ const limit = 5;
 function ProductPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
+  const [toggleModal, setToggleModal] = useState(false);
+
+  const [detailOrder, setDetailOrder] = useState();
 
   const [orders, setOrder] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -89,14 +94,41 @@ function ProductPage() {
     if (status === 'pre') {
       if (currentPage > 0) {
         setCurrentPage(currentPage - 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage - 1) * limit);
+          }
+        });
       }
     } else {
       if (currentPage < total / limit - 1) {
         setCurrentPage(currentPage + 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage + 1) * limit);
+          }
+        });
       }
     }
   };
+  const handleShowDetail = async (orderId) => {
+    try {
+      const res = await CustomAxios.get(`/api/v1/orders/order-detail/${orderId}`, {
+        headers: { 'x-accesstoken': tokens.accessToken },
+      });
 
+      console.log(res.data);
+      setDetailOrder(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setToggleModal(true);
+  };
+  const handleToggleModal = () => {
+    setToggleModal(false);
+    setDetailOrder();
+    getOrders();
+  };
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
       <div className=" w-full relative shadow-md sm:rounded-lg ">
@@ -118,18 +150,6 @@ function ProductPage() {
         <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              {/* <th scope="col" className="p-4">
-                <div className="flex items-center">
-                  <input
-                    id="checkbox-all-search"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="checkbox-all-search" className="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </th> */}
               <th scope="col" className="py-3 px-6">
                 Name
               </th>
@@ -140,11 +160,12 @@ function ProductPage() {
                 Status
               </th>
               <th scope="col" className="py-3 px-6">
-                Time
+                Cancel
               </th>
               <th scope="col" className="py-3 px-6">
-                Email
+                Time
               </th>
+
               <th scope="col" className="py-3 px-6">
                 Phone
               </th>
@@ -162,12 +183,17 @@ function ProductPage() {
                 <td className="py-4 px-6">{order.User.firstName}</td>
                 <td className="py-4 px-6">{order.shippingAddress}</td>
                 <td className="py-4 px-6">{order.status}</td>
+                <td className="py-4 px-6">{order.cancelOrder === true ? 'Cancel' : 'No'}</td>
                 <td className="py-4 px-6">{order.createdAt.slice(0, 10)}</td>
-                <td className="py-4 px-6">{order.User.email}</td>
+
                 <td className="py-4 px-6">{order.User.phone}</td>
                 <td className="py-4 px-6">
-                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
-                  &ensp;
+                  <button
+                    onClick={() => handleShowDetail(order.id)}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  >
+                    Detail
+                  </button>{' '}
                   <button
                     onClick={() => deleteOrder(order.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
@@ -249,6 +275,7 @@ function ProductPage() {
           </ul>
         </nav>
       </div>
+      {toggleModal && <ModalDetail toggleModal={handleToggleModal} detail={detailOrder} />}
     </div>
   );
 }

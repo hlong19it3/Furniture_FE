@@ -1,8 +1,15 @@
 export const routes = {
-  home: '/',
-  signInUser: '/signin',
-  signUpUser: '/signup',
   admin: '/admin',
   signInAdmin: '/admin/signin',
   adminRoute: '/admin/:adminRoute',
+  resetPassword: '/resetpassword',
+  home: '/',
+  signInUser: '/signin',
+  signUpUser: '/signup',
+  profile: '/profile',
+  orderHistory: '/orders',
+  changePassword: '/change-pass',
+  product: '/product@:product',
+  cart: '/cart',
+  checkout: '/checkout-success',
 };
